@@ -24,7 +24,7 @@ def with_error_handling(callback, *args, **kwargs):
 class Request:
 
     def __init__(self, version):
-        self.base = "https://api.molt.in/"
+        self.base = "https://api.moltin.com/"
         self.version = None
         self.access_token = None
         self.headers = {}
