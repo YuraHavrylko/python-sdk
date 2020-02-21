@@ -20,7 +20,7 @@ class BaseEndpoint(object):
 class Endpoint(BaseEndpoint):
 
     def find(self, id):
-        return self.find_by({"id": id})
+        return self.request.get(self._url_with(id), payload=params)
 
     def update(self, id, params):
         return self.request.put(self._url_with(id), payload=params)
