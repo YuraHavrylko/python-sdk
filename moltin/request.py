@@ -8,9 +8,9 @@ def with_error_handling(callback, *args, **kwargs):
     r = response.json()
 
     if 'error' in r:
-        raise RequestError(r['error'])
+        raise Exception(r['error'])
     elif 'errors' in r:
-        raise RequestError(", ".join(r['errors']))
+        raise Exception(r['errors'][0])
     elif 'result' in r:
         result = r['result']
     elif 'message' in r:
@@ -48,12 +48,11 @@ class Request:
                                    headers=self.headers,
                                    data=payload)
 
-    def post(self, trailing_uri, payload, auth=False):
+    def post(self, trailing_uri, payload, headers={}, auth=False):
         if auth:
-            headers = {}
             request_url = self.make_auth_url(trailing_uri)
         else:
-            headers = self.headers
+            headers.update(self.headers)
             request_url = self.make_url(trailing_uri)
 
         return with_error_handling(requests.post,
