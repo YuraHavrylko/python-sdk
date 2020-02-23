@@ -2,6 +2,8 @@ import uuid
 
 from . url import sanitize_url_fragment
 from . exception import *
+from functools import reduce
+import json
 
 
 class BaseEndpoint(object):
@@ -20,7 +22,7 @@ class BaseEndpoint(object):
 class Endpoint(BaseEndpoint):
 
     def find(self, id):
-        return self.request.get(self._url_with(id), payload=params)
+        return self.request.get(self._url_with(id))
 
     def update(self, id, params):
         return self.request.put(self._url_with(id), payload=params)
@@ -33,12 +35,15 @@ class Endpoint(BaseEndpoint):
 
     def find_by(self, params):
         try:
-            return self.request.get(self.endpoint, payload=params)
+            s = ''
+            for k, v in params.items():
+                s += 'filter=eq({key},{value})&'.format(key=k, value=v)
+            return self.request.get(self.endpoint + '?' + s)
         except RequestError:  # If we can't find the resource
             return None
 
     def create(self, params):
-        return self.request.post(self.endpoint, payload=params)
+        return self.request.post(self.endpoint, payload=json.dumps(params), headers={'Content-type': 'application/json'})
 
 
 class CartEndpoint(BaseEndpoint):
@@ -89,3 +94,4 @@ class CheckoutEndpoint(BaseEndpoint):
 
     def payment(self, method, order_id, params):
         return self.request.post(self._url_with("payment", method, order_id), params)
+
