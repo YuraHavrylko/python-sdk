@@ -117,7 +117,8 @@ class Moltin:
     #
 
     def post(self, uri, payload):
-        return self.request.post(uri, payload)
+        import json
+        return self.request.post(uri, json.dumps(payload), headers={'Content-type': 'application/json'})
 
     def get(self, uri):
         return self.request.get(uri)
